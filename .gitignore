@@ -1,0 +1,18 @@
+# Database credentials
+db.php
+config/
+config.php
+database.php
+*.env
+.env
+.env.local
+
+# Scratch / temp
+*.log
+*.txt
+Thumbs.db
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
