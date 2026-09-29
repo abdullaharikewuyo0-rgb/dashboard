@@ -136,7 +136,7 @@
       padding: 25px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      max-width: 700px;
+      max-width: 800px;
       margin: 0 auto;
       width: 100%;
     }
@@ -149,19 +149,26 @@
     }
 
     .input-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 10px;
       margin-bottom: 20px;
-      flex-wrap: wrap;
+    }
+    @media (min-width: 640px) {
+      .input-row {
+        grid-template-columns: 2fr 1fr auto;
+        align-items: center;
+      }
     }
 
-    .input-row input {
-      flex: 1;
-      min-width: 200px;
+    .input-row input[type="text"],
+    .input-row input[type="time"] {
       padding: 12px 14px;
       border: 2px solid gainsboro;
       border-radius: 8px;
       font-size: 15px;
+      font-family: inherit;
+      width: 100%;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .input-row input:focus {
@@ -180,6 +187,7 @@
       font-size: 14px;
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
+      white-space: nowrap;
     }
     .add-btn:hover { background: darkslateblue; transform: translateY(-2px); }
 
@@ -272,6 +280,18 @@
       color: darkslategray;
       font-weight: bold;
       word-break: break-word;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .todo-time {
+      font-size: 12px;
+      color: steelblue;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 3px;
     }
 
     .todo-date {
@@ -282,22 +302,24 @@
       margin-top: 2px;
     }
 
-    .delete-btn {
-      background: crimson;
-      color: white;
-      border: none;
-      width: 28px;
-      height: 28px;
+    .action-btn {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 14px;
+      font-size: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: background 0.2s, transform 0.2s;
       flex-shrink: 0;
+      border: none;
+      color: white;
     }
+    .edit-btn { background: steelblue; }
+    .edit-btn:hover { background: darkslateblue; transform: scale(1.15); }
+
+    .delete-btn { background: crimson; }
     .delete-btn:hover { background: darkred; transform: scale(1.15); }
 
     .empty-state {
@@ -366,7 +388,6 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-      border-top: 6px solid crimson;
       animation: popIn 0.25s ease;
     }
     @keyframes popIn {
@@ -374,17 +395,21 @@
       to   { transform: scale(1); opacity: 1; }
     }
 
+    .modal.confirm-modal { border-top: 6px solid crimson; }
+    .modal.edit-modal    { border-top: 6px solid steelblue; }
+
     .modal-header {
       padding: 20px 24px 12px;
       border-bottom: 2px solid gainsboro;
     }
     .modal-header h3 {
-      color: crimson;
       font-size: 20px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
+    .modal.confirm-modal .modal-header h3 { color: crimson; }
+    .modal.edit-modal    .modal-header h3 { color: steelblue; }
     .modal-header p {
       color: gray;
       font-size: 13px;
@@ -396,6 +421,42 @@
       overflow-y: auto;
       flex: 1;
     }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      color: darkslategray;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 2px solid gainsboro;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: steelblue;
+      box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.2);
+    }
+    .form-group .field-error {
+      color: crimson;
+      font-size: 12px;
+      margin-top: 5px;
+      font-weight: bold;
+      display: none;
+    }
+    .form-group.has-error input {
+      border-color: crimson;
+      background: #fff5f5;
+    }
+    .form-group.has-error .field-error { display: block; }
 
     .modal-table-wrapper {
       max-height: 320px;
@@ -420,25 +481,11 @@
       text-align: left;
       border-bottom: 1px solid gainsboro;
     }
-    .modal-table tbody tr:nth-child(even) {
-      background: whitesmoke;
-    }
-    .modal-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-    .modal-table .idx {
-      color: gray;
-      width: 40px;
-      text-align: center;
-    }
-    .modal-table .status-done {
-      color: seagreen;
-      font-weight: bold;
-    }
-    .modal-table .status-pending {
-      color: darkorange;
-      font-weight: bold;
-    }
+    .modal-table tbody tr:nth-child(even) { background: whitesmoke; }
+    .modal-table tbody tr:last-child td { border-bottom: none; }
+    .modal-table .idx { color: gray; width: 40px; text-align: center; }
+    .modal-table .status-done    { color: seagreen;  font-weight: bold; }
+    .modal-table .status-pending { color: darkorange; font-weight: bold; }
 
     .modal-footer {
       padding: 16px 24px 20px;
@@ -472,6 +519,14 @@
     }
     .modal-btn.confirm:hover {
       background: darkred;
+      transform: translateY(-2px);
+    }
+    .modal-btn.save {
+      background: steelblue;
+      color: white;
+    }
+    .modal-btn.save:hover {
+      background: darkslateblue;
       transform: translateY(-2px);
     }
 
@@ -569,6 +624,7 @@
 
         <div class="input-row">
           <input type="text" id="taskInput" placeholder="What needs to be done?" maxlength="120">
+          <input type="time" id="taskTime" title="Optional time">
           <button class="add-btn" id="addBtn">+ Add Task</button>
         </div>
 
@@ -625,11 +681,11 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="confirmModal">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-overlay" id="confirmAllModal">
+    <div class="modal confirm-modal" role="dialog" aria-modal="true">
       <div class="modal-header">
-        <h3 id="modalTitle">⚠️ Confirm Delete All Tasks</h3>
-        <p id="modalSubtitle"> This action cannot be undone.</p>
+        <h3>⚠️ Confirm Delete All Tasks</h3>
+        <p id="confirmAllSubtitle">This action cannot be undone.</p>
       </div>
 
       <div class="modal-body">
@@ -642,19 +698,77 @@
               <tr>
                 <th class="idx">#</th>
                 <th>Task</th>
+                <th>Time</th>
                 <th>Status</th>
-                <th>Created</th>
               </tr>
             </thead>
-            <tbody id="modalTableBody">
-            </tbody>
+            <tbody id="confirmAllTableBody"></tbody>
           </table>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button class="modal-btn cancel" id="modalCancel">Cancel</button>
-        <button class="modal-btn confirm" id="modalConfirm">Yes, Delete All</button>
+        <button class="modal-btn cancel" id="confirmAllCancel">Cancel</button>
+        <button class="modal-btn confirm" id="confirmAllConfirm">Yes, Delete All</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmOneModal">
+    <div class="modal confirm-modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>⚠️ Confirm Delete Task</h3>
+        <p>Are you sure you want to delete this task? This action cannot be undone.</p>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-weight:bold; color:darkslategray; margin-bottom:10px;">
+          Task to be deleted:
+        </p>
+        <div class="modal-table-wrapper">
+          <table class="modal-table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="confirmOneTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn cancel" id="confirmOneCancel">Cancel</button>
+        <button class="modal-btn confirm" id="confirmOneConfirm">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editModal">
+    <div class="modal edit-modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>✏️ Edit Task</h3>
+        <p>Modify the task text or time, then click Save Changes.</p>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group" id="editTextGroup">
+          <label for="editTaskText">Task</label>
+          <input type="text" id="editTaskText" maxlength="120" placeholder="Task description">
+          <div class="field-error">Task cannot be empty.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="editTaskTime">Time (optional)</label>
+          <input type="time" id="editTaskTime">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn cancel" id="editCancel">Cancel</button>
+        <button class="modal-btn save" id="editSave"> Save Changes</button>
       </div>
     </div>
   </div>
@@ -663,6 +777,7 @@
     (function () {
       const STORAGE_KEY = 'student_dashboard_todos';
       const input       = document.getElementById('taskInput');
+      const timeInput   = document.getElementById('taskTime');
       const addBtn      = document.getElementById('addBtn');
       const list        = document.getElementById('todoList');
       const totalCount  = document.getElementById('totalCount');
@@ -671,14 +786,28 @@
       const clearAll    = document.getElementById('clearAll');
       const clearDone   = document.getElementById('clearDone');
 
-      const modal          = document.getElementById('confirmModal');
-      const modalTableBody = document.getElementById('modalTableBody');
-      const modalCancel    = document.getElementById('modalCancel');
-      const modalConfirm   = document.getElementById('modalConfirm');
-      const modalSubtitle  = document.getElementById('modalSubtitle');
+      const confirmAllModal    = document.getElementById('confirmAllModal');
+      const confirmAllTableBody= document.getElementById('confirmAllTableBody');
+      const confirmAllCancel   = document.getElementById('confirmAllCancel');
+      const confirmAllConfirm  = document.getElementById('confirmAllConfirm');
+      const confirmAllSubtitle = document.getElementById('confirmAllSubtitle');
 
-      let todos  = [];
-      let filter = 'all';
+      const confirmOneModal    = document.getElementById('confirmOneModal');
+      const confirmOneTableBody= document.getElementById('confirmOneTableBody');
+      const confirmOneCancel   = document.getElementById('confirmOneCancel');
+      const confirmOneConfirm  = document.getElementById('confirmOneConfirm');
+
+      const editModal     = document.getElementById('editModal');
+      const editTaskText  = document.getElementById('editTaskText');
+      const editTaskTime  = document.getElementById('editTaskTime');
+      const editTextGroup = document.getElementById('editTextGroup');
+      const editCancel    = document.getElementById('editCancel');
+      const editSave      = document.getElementById('editSave');
+
+      let todos         = [];
+      let filter        = 'all';
+      let pendingDelete = null;
+      let pendingEdit   = null;
 
       const load = () => {
         try {
@@ -703,6 +832,17 @@
         return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       };
 
+      const hourPad = (n) => String(n).padStart(2, '0');
+      const minPad  = (n) => String(n).padStart(2, '0');
+
+      const formatTime = (timeStr) => {
+        if (!timeStr) return '';
+        const [h, m] = timeStr.split(':').map(Number);
+        const period = h >= 12 ? 'PM' : 'AM';
+        const hour12 = h % 12 || 12;
+        return `⏰ ${hourPad(hour12)}:${minPad(m)} ${period}`;
+      };
+
       const render = () => {
         list.innerHTML = '';
 
@@ -722,9 +862,11 @@
               <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} data-id="${todo.id}">
               <div class="todo-text">
                 ${escapeHtml(todo.text)}
+                ${todo.time ? `<span class="todo-time">${formatTime(todo.time)}</span>` : ''}
                 <span class="todo-date">${formatDate(todo.createdAt)}</span>
               </div>
-              <button class="delete-btn" data-id="${todo.id}" title="Delete">×</button>
+              <button class="action-btn edit-btn" data-id="${todo.id}" title="Edit">✏️</button>
+              <button class="action-btn delete-btn" data-id="${todo.id}" title="Delete">×</button>
             `;
             list.appendChild(li);
           });
@@ -739,11 +881,11 @@
         doneCount.textContent    = done;
       };
 
-      const renderModalTable = () => {
-        modalTableBody.innerHTML = '';
+      const renderConfirmAllTable = () => {
+        confirmAllTableBody.innerHTML = '';
 
         if (todos.length === 0) {
-          modalTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:silver; padding:20px;">No tasks</td></tr>';
+          confirmAllTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:silver; padding:20px;">No tasks</td></tr>';
           return;
         }
 
@@ -757,34 +899,86 @@
           const tdText = document.createElement('td');
           tdText.textContent = todo.text;
 
+          const tdTime = document.createElement('td');
+          tdTime.textContent = todo.time ? todo.time : '—';
+
           const tdStatus = document.createElement('td');
           tdStatus.textContent = todo.completed ? 'Completed' : 'Pending';
           tdStatus.className = todo.completed ? 'status-done' : 'status-pending';
 
-          const tdDate = document.createElement('td');
-          tdDate.textContent = formatDate(todo.createdAt);
-          tdDate.style.fontSize = '12px';
-          tdDate.style.color = 'gray';
-
           tr.appendChild(tdIdx);
           tr.appendChild(tdText);
+          tr.appendChild(tdTime);
           tr.appendChild(tdStatus);
-          tr.appendChild(tdDate);
-          modalTableBody.appendChild(tr);
+          confirmAllTableBody.appendChild(tr);
         });
       };
 
-      const openModal = () => {
-        renderModalTable();
-        modalSubtitle.textContent =
+      const openConfirmAll = () => {
+        renderConfirmAllTable();
+        confirmAllSubtitle.textContent =
           `You are about to permanently delete ${todos.length} task${todos.length === 1 ? '' : 's'}. This action cannot be undone.`;
-        modal.classList.add('open');
+        confirmAllModal.classList.add('open');
         document.body.style.overflow = 'hidden';
       };
 
-      const closeModal = () => {
-        modal.classList.remove('open');
+      const closeConfirmAll = () => {
+        confirmAllModal.classList.remove('open');
         document.body.style.overflow = '';
+      };
+
+      const openConfirmOne = (id) => {
+        const todo = todos.find(t => t.id === id);
+        if (!todo) return;
+
+        pendingDelete = id;
+        confirmOneTableBody.innerHTML = '';
+
+        const tr = document.createElement('tr');
+
+        const tdText = document.createElement('td');
+        tdText.textContent = todo.text;
+
+        const tdTime = document.createElement('td');
+        tdTime.textContent = todo.time ? todo.time : '—';
+
+        const tdStatus = document.createElement('td');
+        tdStatus.textContent = todo.completed ? 'Completed' : 'Pending';
+        tdStatus.className = todo.completed ? 'status-done' : 'status-pending';
+
+        tr.appendChild(tdText);
+        tr.appendChild(tdTime);
+        tr.appendChild(tdStatus);
+        confirmOneTableBody.appendChild(tr);
+
+        confirmOneModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeConfirmOne = () => {
+        confirmOneModal.classList.remove('open');
+        document.body.style.overflow = '';
+        pendingDelete = null;
+      };
+
+      const openEdit = (id) => {
+        const todo = todos.find(t => t.id === id);
+        if (!todo) return;
+
+        pendingEdit = id;
+        editTaskText.value = todo.text;
+        editTaskTime.value = todo.time || '';
+        editTextGroup.classList.remove('has-error');
+
+        editModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => editTaskText.focus(), 100);
+      };
+
+      const closeEdit = () => {
+        editModal.classList.remove('open');
+        document.body.style.overflow = '';
+        pendingEdit = null;
       };
 
       const addTask = () => {
@@ -796,16 +990,22 @@
         todos.unshift({
           id: Date.now() + Math.random(),
           text,
+          time: timeInput.value || '',
           completed: false,
           createdAt: Date.now(),
         });
         input.value = '';
+        timeInput.value = '';
         save();
         render();
+        input.focus();
       };
 
       addBtn.addEventListener('click', addTask);
       input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addTask();
+      });
+      timeInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') addTask();
       });
 
@@ -821,11 +1021,17 @@
       });
 
       list.addEventListener('click', (e) => {
-        if (!e.target.classList.contains('delete-btn')) return;
-        const id = parseFloat(e.target.dataset.id);
-        todos = todos.filter(t => t.id !== id);
-        save();
-        render();
+        const editBtn = e.target.closest('.edit-btn');
+        if (editBtn) {
+          openEdit(parseFloat(editBtn.dataset.id));
+          return;
+        }
+
+        const delBtn = e.target.closest('.delete-btn');
+        if (delBtn) {
+          openConfirmOne(parseFloat(delBtn.dataset.id));
+          return;
+        }
       });
 
       document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -839,26 +1045,69 @@
 
       clearAll.addEventListener('click', () => {
         if (todos.length === 0) return;
-        openModal();
+        openConfirmAll();
       });
-
-      modalCancel.addEventListener('click', closeModal);
-
-      modalConfirm.addEventListener('click', () => {
+      confirmAllCancel.addEventListener('click', closeConfirmAll);
+      confirmAllConfirm.addEventListener('click', () => {
         todos = [];
         save();
         render();
-        closeModal();
+        closeConfirmAll();
+      });
+      confirmAllModal.addEventListener('click', (e) => {
+        if (e.target === confirmAllModal) closeConfirmAll();
       });
 
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
+      confirmOneCancel.addEventListener('click', closeConfirmOne);
+      confirmOneConfirm.addEventListener('click', () => {
+        if (pendingDelete !== null) {
+          todos = todos.filter(t => t.id !== pendingDelete);
+          save();
+          render();
+        }
+        closeConfirmOne();
+      });
+      confirmOneModal.addEventListener('click', (e) => {
+        if (e.target === confirmOneModal) closeConfirmOne();
+      });
+
+      editCancel.addEventListener('click', closeEdit);
+      editSave.addEventListener('click', () => {
+        const newText = editTaskText.value.trim();
+        if (newText === '') {
+          editTextGroup.classList.add('has-error');
+          editTaskText.focus();
+          return;
+        }
+        const todo = todos.find(t => t.id === pendingEdit);
+        if (todo) {
+          todo.text = newText;
+          todo.time = editTaskTime.value || '';
+          save();
+          render();
+        }
+        closeEdit();
+      });
+      editTaskText.addEventListener('input', () => {
+        if (editTaskText.value.trim() !== '') {
+          editTextGroup.classList.remove('has-error');
+        }
+      });
+      editTaskText.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') editSave.click();
+      });
+      editTaskTime.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') editSave.click();
+      });
+      editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) closeEdit();
       });
 
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) {
-          closeModal();
-        }
+        if (e.key !== 'Escape') return;
+        if (confirmAllModal.classList.contains('open')) closeConfirmAll();
+        if (confirmOneModal.classList.contains('open')) closeConfirmOne();
+        if (editModal.classList.contains('open'))       closeEdit();
       });
 
       clearDone.addEventListener('click', () => {

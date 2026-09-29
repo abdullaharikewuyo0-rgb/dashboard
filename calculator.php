@@ -17,7 +17,6 @@
 
     .layout { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
 
-    /* SIDEBAR */
     .sidebar {
       background: darkslategray;
       color: white;
@@ -70,10 +69,8 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* MAIN */
     .main { padding: 20px; display: grid; gap: 20px; }
 
-    /* HEADER */
     .header {
       display: flex;
       flex-wrap: wrap;
@@ -286,10 +283,9 @@
       border-radius: 8px;
       font-size: 14px;
       border-left: 4px solid steelblue;
-      cursor: pointer;
       transition: transform 0.2s, background 0.2s;
       display: flex;
-      justify-content: space-between;
+      align-items: center;
       gap: 10px;
     }
 
@@ -298,14 +294,47 @@
       transform: translateX(4px);
     }
 
+    .history-list .history-info {
+      flex: 1;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
     .history-list .expr {
       color: gray;
       font-size: 13px;
+      word-break: break-word;
     }
 
     .history-list .result {
       font-weight: bold;
       color: darkslategray;
+      white-space: nowrap;
+    }
+
+    .history-list .del-one-btn {
+      background: crimson;
+      color: white;
+      border: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .history-list .del-one-btn:hover {
+      background: darkred;
+      transform: scale(1.15);
     }
 
     .history-empty {
@@ -332,8 +361,10 @@
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
     }
-    .btn-clear-history:hover { background: darkred;
-    transform: scale(1.2) translateY(-5px) }
+    .btn-clear-history:hover {
+      background: darkred;
+      transform: scale(1.2) translateY(-5px);
+    }
 
     .footer {
       background: darkslategray;
@@ -411,7 +442,7 @@
       <label for="nav-toggle" class="nav-label">&#9776;</label>
       <nav class="nav">
         <ul>
-            <li><a href="students.php">Students</a></li>
+          <li><a href="students.php">Students</a></li>
           <li><a href="dashboard.php">Dashboard</a></li>
           <li><a href="courses.php">Courses</a></li>
           <li><a href="assignments.php">Assignments</a></li>
@@ -560,7 +591,7 @@
       };
 
       const addToHistory = (expr, result) => {
-        history.unshift({ expr, result });
+        history.unshift({ id: Date.now() + Math.random(), expr, result });
         if (history.length > 20) history.pop();
         renderHistory();
       };
@@ -570,12 +601,29 @@
           historyList.innerHTML = '<li class="history-empty">No calculations yet</li>';
           return;
         }
-        historyList.innerHTML = history.map((h, i) =>
-          `<li data-index="${i}">
-             <span class="expr">${h.expr}</span>
-             <span class="result">= ${h.result}</span>
-           </li>`
-        ).join('');
+
+        historyList.innerHTML = '';
+
+        history.forEach(item => {
+          const li = document.createElement('li');
+          li.dataset.id = item.id;
+
+          const info = document.createElement('div');
+          info.className = 'history-info';
+          info.innerHTML = `
+            <span class="expr">${item.expr}</span>
+            <span class="result">= ${item.result}</span>
+          `;
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'del-one-btn';
+          delBtn.title = 'Delete this calculation';
+          delBtn.textContent = '×';
+
+          li.appendChild(info);
+          li.appendChild(delBtn);
+          historyList.appendChild(li);
+        });
       };
 
       const inputNumber = (n) => {
@@ -684,16 +732,31 @@
       });
 
       historyList.addEventListener('click', (e) => {
-        const li = e.target.closest('li');
-        if (!li || !li.dataset.index) return;
-        const item = history[li.dataset.index];
-        if (!item) return;
-        current  = String(item.result);
-        justEval = true;
-        updateScreen();
+        const delBtn = e.target.closest('.del-one-btn');
+
+        if (delBtn) {
+          const li = delBtn.closest('li');
+          const id = parseFloat(li.dataset.id);
+          history = history.filter(h => h.id !== id);
+          renderHistory();
+          return;
+        }
+
+        const info = e.target.closest('.history-info');
+        if (info) {
+          const li = info.closest('li');
+          const id = parseFloat(li.dataset.id);
+          const item = history.find(h => h.id === id);
+          if (item) {
+            current  = String(item.result);
+            justEval = true;
+            updateScreen();
+          }
+        }
       });
 
       clearBtn.addEventListener('click', () => {
+        if (history.length === 0) return;
         history = [];
         renderHistory();
       });
